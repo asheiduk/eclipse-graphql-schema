@@ -1,0 +1,61 @@
+grammar asheiduk.graphqls.GraphQLS with org.eclipse.xtext.common.Terminals
+
+generate graphQLS "http://www.graphqls.asheiduk/GraphQLS"
+
+Schema:
+	definitions += Definition*
+	;
+		
+Definition:
+	Type | Enum 
+;
+
+Type:
+	('type' | 'input') name=ID  '{'
+		fields += TypeField*
+	'}'
+;
+
+TypeField:
+	name=ID 
+	( '(' arguments += FieldArgument (',' arguments += FieldArgument )* ')')?
+	':' type=TypeRef
+;
+
+FieldArgument:
+	name=XID ':' type=TypeRef
+;
+
+TypeRef:
+	(predefinedType=PredefinedType | type=[Type] ) mandatory?='!'?
+	| isArray?='[' type=[Definition|XID] itemMandatory?='!'? ']' mandatory?='!'?
+;
+
+Enum:
+	'enum' name=ID '{'
+		literals += EnumLiteral*
+	'}'
+;
+
+EnumLiteral:
+	name=ID
+;
+
+enum PredefinedType:
+	ID | String | Int | Float | Boolean
+;
+
+XID:	
+	ID
+	| 'input'
+	| 'type'
+	| 'enum'
+;
+
+@Override 
+terminal SL_COMMENT : '#' !('\n'|'\r')* ('\r'? '\n')?;
+
+@Override 
+terminal ML_COMMENT : '"""' -> '"""';
+
+	
