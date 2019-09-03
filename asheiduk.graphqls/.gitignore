@@ -1,0 +1,6 @@
+src-gen/
+xtend-gen/
+bin/
+plugin.xml_gen
+model/generated/
+/.antlr-generator-*.jar
