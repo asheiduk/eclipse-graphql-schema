@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: asheiduk.graphqls
+Bundle-ManifestVersion: 2
+Bundle-Name: asheiduk.graphqls
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: asheiduk.graphqls; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.xtext,
+ org.eclipse.xtext.xbase,
+ org.eclipse.equinox.common;bundle-version="3.5.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
+ org.eclipse.xtext.util,
+ org.eclipse.emf.common,
+ org.eclipse.xtend.lib;bundle-version="2.14.0",
+ org.antlr.runtime;bundle-version="[3.2.0,3.2.1)"
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Export-Package: asheiduk.graphqls.scoping,
+ asheiduk.graphqls.validation,
+ asheiduk.graphqls.generator,
+ asheiduk.graphqls,
+ asheiduk.graphqls.serializer,
+ asheiduk.graphqls.services,
+ asheiduk.graphqls.graphQLS.util,
+ asheiduk.graphqls.graphQLS.impl,
+ asheiduk.graphqls.graphQLS,
+ asheiduk.graphqls.parser.antlr.internal,
+ asheiduk.graphqls.parser.antlr
+Import-Package: org.apache.log4j
