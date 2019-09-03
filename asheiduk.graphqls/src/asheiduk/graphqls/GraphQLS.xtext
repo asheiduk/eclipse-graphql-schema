@@ -5,30 +5,35 @@ generate graphQLS "http://www.graphqls.asheiduk/GraphQLS"
 Schema:
 	definitions += Definition*
 	;
-		
+
 Definition:
 	Type | Enum 
 ;
 
 Type:
-	('type' | 'input') name=ID  '{'
-		fields += TypeField*
+	('type' | input ?= 'input') name=ID '{'
+		fields += Field*
 	'}'
 ;
 
-TypeField:
+Field:
 	name=ID 
-	( '(' arguments += FieldArgument (',' arguments += FieldArgument )* ')')?
-	':' type=TypeRef
+	( '(' arguments += Argument (',' arguments += Argument)* ')' )?
+	':' type=TypeSpec
 ;
 
-FieldArgument:
-	name=XID ':' type=TypeRef
+Argument:
+	name=XID ':' type=TypeSpec
+;
+
+TypeSpec:
+	typeRef=TypeRef required ?= '!'?
+	| isArray ?= '[' typeRef=TypeRef itemRequired ?= '!'? ']' required ?= '!'?
 ;
 
 TypeRef:
-	(predefinedType=PredefinedType | type=[Type] ) mandatory?='!'?
-	| isArray?='[' type=[Definition|XID] itemMandatory?='!'? ']' mandatory?='!'?
+	predefinedType=PredefinedType
+	| type=[Definition|XID]
 ;
 
 Enum:
@@ -45,7 +50,7 @@ enum PredefinedType:
 	ID | String | Int | Float | Boolean
 ;
 
-XID:	
+XID:
 	ID
 	| 'input'
 	| 'type'
@@ -57,5 +62,3 @@ terminal SL_COMMENT : '#' !('\n'|'\r')* ('\r'? '\n')?;
 
 @Override 
 terminal ML_COMMENT : '"""' -> '"""';
-
-	
