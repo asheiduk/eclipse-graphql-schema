@@ -12,6 +12,9 @@ Workflow {
 			project = StandardProjectConfig {
 				baseName = "asheiduk.graphqls"
 				rootPath = rootPath
+				runtimeTest = {
+					enabled = true
+				}
 				eclipsePlugin = {
 					enabled = true
 				}
