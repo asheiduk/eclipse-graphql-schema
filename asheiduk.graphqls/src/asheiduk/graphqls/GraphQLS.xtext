@@ -3,9 +3,7 @@
  *
  * https://graphql.github.io/graphql-spec/June2018/#sec-Type-System
  */
-
-// TODO: eliminate common.Terminals
-grammar asheiduk.graphqls.GraphQLS with org.eclipse.xtext.common.Terminals hidden (WS, SL_COMMENT, COMMA)
+grammar asheiduk.graphqls.GraphQLS hidden (WS, SL_COMMENT, COMMA)
 
 import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
@@ -248,10 +246,6 @@ fragment Arguments*:
 // -- Terminals
 // ------------------------------------------------------------------
 
-@Override 
-terminal SL_COMMENT : '#' !('\n'|'\r')* ('\r'? '\n')?;
-
-@Override
 terminal INT returns ecore::EInt:
 	INTEGER_PART;
 
@@ -270,11 +264,18 @@ terminal fragment EXPONENT_PART:
 	('e' | 'E') ('+' | '-')? '0'..'9'*;	// TODO: * or +?
 
 // TODO: align with spec
-@Override
 terminal STRING:
 	'"' ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|'"') )* '"'
 	| '"""' -> '"""';
 
-terminal COMMA:
-	','
-;
+terminal ID: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
+
+// -- hidden tokens
+
+terminal SL_COMMENT : '#' !('\n'|'\r')* ('\r'? '\n')?;
+
+terminal COMMA: ',';
+
+terminal WS: (' '|'\t'|'\r'|'\n')+;
+
+// terminal ANY_OTHER: .;
