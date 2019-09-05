@@ -13,7 +13,7 @@ generate graphQLS "http://www.graphqls.asheiduk/GraphQLS"
 // TODO: TypeSystemExtension?
 // TODO: ExecutableDefinition?
 Document:
-	definitions += Definition*
+	definitions += Definition+
 ;
 
 Definition:
@@ -31,8 +31,8 @@ TypeSystemDefinition:
 // ------------------------------------------------------------------------
 
 SchemaDefinition:
-	'schema' Directives '{'
-		rootOperations += RootOperationTypeDefinition*
+	'schema' Directives? '{'
+		rootOperations += RootOperationTypeDefinition+
 	'}'
 ;
 
@@ -60,7 +60,7 @@ TypeDefinition:
 // ------------------------------------------------------------------------
 
 ScalarTypeDefinition:
-	Description 'scalar' name=ID Directives
+	Description 'scalar' name=ID Directives?
 	;
 
 // ------------------------------------------------------------------------
@@ -68,53 +68,53 @@ ScalarTypeDefinition:
 ObjectTypeDefinition:
 	Description 'type' name=ID
 	( 'implements' '&'? implements += NamedType ( '&' implements += NamedType)* )?
-	Directives
+	Directives?
 	('{'
-		fields += FieldDefinition*
+		fields += FieldDefinition+
 	'}')?
 ;
 
 FieldDefinition:
-	Description	name=ID Arguments? ':' TypeSpec Directives
+	Description	name=ID Arguments? ':' TypeSpec Directives?
 ;
 
 // ------------------------------------------------------------------------
 
 InterfaceTypeDefinition:
-	Description 'interface' name=ID Directives ('{'
-		fields += FieldDefinition*
+	Description 'interface' name=ID Directives? ('{'
+		fields += FieldDefinition+
 	'}')? 
 ;
 
 // ------------------------------------------------------------------------
 
 UnionTypeDefinition:
-	Description 'union' name=ID Directives '='
+	Description 'union' name=ID Directives? '='
 		'|'? members += NamedType ('|' members += NamedType)*
 ;
 
 // ------------------------------------------------------------------------
 
 EnumTypeDefinition:
-	Description 'enum' name=ID Directives ('{'
-		values += EnumValueDefinition*
+	Description 'enum' name=ID Directives? ('{'
+		values += EnumValueDefinition+
 	'}')?
 ;
 
 EnumValueDefinition:
-	Description name=ID Directives
+	Description name=ID Directives?
 ;
 
 // ------------------------------------------------------------------------
 
 InputObjectTypeDefinition:
-	Description 'input' name=ID Directives ('{'
-		fields += InputValueDefinition*
+	Description 'input' name=ID Directives? ('{'
+		fields += InputValueDefinition+
 	'}')?
 ;
 
 InputValueDefinition:
-	Description name=ID ':' TypeSpec ('=' defaultValue=Value)? Directives
+	Description name=ID ':' TypeSpec ('=' defaultValue=Value)? Directives?
 ;
 
 // ------------------------------------------------------------------------
@@ -187,7 +187,7 @@ enum DirectiveLocation:
 
 Directive:
 	// TODO: replace "name" with crossreference to prefined or user defined DirectiveDefinition
-	'@' name=ID ( '(' arguments += Argument* ')' )?
+	'@' name=ID ( '(' arguments += Argument+ ')' )?
 ;
 
 Argument:
@@ -197,7 +197,7 @@ Argument:
 // ------------------------------------------------------------------------
 
 ArgumentDefinition:
-	Description name=ID ':' TypeSpec ('=' defaultValue=Value)? Directives
+	Description name=ID ':' TypeSpec ('=' defaultValue=Value)? Directives?
 ;
 
 Value:
@@ -231,7 +231,7 @@ fragment Description*:
 ;
 
 fragment Directives*:
-	directives += Directive*
+	directives += Directive+
 ;
 
 fragment TypeSpec*:
@@ -239,7 +239,7 @@ fragment TypeSpec*:
 ;
 
 fragment Arguments*:
-	'(' arguments += ArgumentDefinition* ')'	
+	'(' arguments += ArgumentDefinition+ ')'	
 ;
 
 // ------------------------------------------------------------------
@@ -269,10 +269,10 @@ terminal fragment INTEGER_PART:
 	'-'? '0' | '-'? '1'..'9' '0'..'9'*;
 
 terminal fragment FRACTIONAL_PART:
-	'.' '0'..'9'*;	// TODO: * or +?
+	'.' '0'..'9'+;
 
 terminal fragment EXPONENT_PART:
-	('e' | 'E') ('+' | '-')? '0'..'9'*;	// TODO: * or +?
+	('e' | 'E') ('+' | '-')? '0'..'9'+;
 
 // TODO: align with spec
 terminal STRING:
