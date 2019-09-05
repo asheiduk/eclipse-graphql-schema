@@ -23,6 +23,36 @@ class GraphQLSParsingTest {
 	}
 	
 	@Test
+	def void xidWorkshopExample() {
+		'''
+			type Task
+			input AddTaskInput
+			
+			type Mutation {
+				addTask(projectId: ID, input: AddTaskInput!): Task!
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void xidType() {
+		'''
+			type type @type(type: "type") {
+				type(type: type): type
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void xidInput() {
+		'''
+			input input {
+				input: input
+			}
+		'''.shallParse
+	}
+	
+	@Test
 	def void intValue() {
 		'''
 			type MyType{
