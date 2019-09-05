@@ -153,22 +153,21 @@ class SpecExamplesParsingTest {
 		'''.shallParse
 	}
 		
-//	@Test
-//	def void exampleNo60(){
-//		'''
-//			extend type Story {
-//			  isHiddenLocally: Boolean
-//			}
-//		'''.doParse
-//	}
+	@Test
+	def void exampleNo60(){
+		'''
+			extend type Story {
+			  isHiddenLocally: Boolean
+			}
+		'''.shallParse
+	}
 	
-	
-//	@Test
-//	def void exampleNo61(){
-//		'''
-//			extend type User @addedDirective
-//		'''.doParse
-//	}
+	@Test
+	def void exampleNo61(){
+		'''
+			extend type User @addedDirective
+		'''.shallParse
+	}
 	
 	@Test
 	def void exampleNo62_63(){
@@ -200,29 +199,29 @@ class SpecExamplesParsingTest {
 		'''.shallParse
 	}
 	
-//	@Test
-//	def void exampleNo67(){
-//		'''
-//			extend interface NamedEntity {
-//			  nickname: String
-//			}
-//			
-//			extend type Person {
-//			  nickname: String
-//			}
-//			
-//			extend type Business {
-//			  nickname: String
-//			}
-//		'''.doParse
-//	}
+	@Test
+	def void exampleNo67(){
+		'''
+			extend interface NamedEntity {
+			  nickname: String
+			}
+			
+			extend type Person {
+			  nickname: String
+			}
+			
+			extend type Business {
+			  nickname: String
+			}
+		'''.shallParse
+	}
 	
-//	@Test
-//	def void exampleNo68(){
-//		'''
-//			extend interface NamedEntity @addedDirective
-//		'''.doParse
-//	}
+	@Test
+	def void exampleNo68(){
+		'''
+			extend interface NamedEntity @addedDirective
+		'''.shallParse
+	}
 		
 	@Test
 	def void exampleNo69(){
@@ -287,6 +286,18 @@ class SpecExamplesParsingTest {
 	}
 	
 	@Test
+	def void exampleNo79(){
+		// TODO: fragments are not yet supported
+		'''
+			directive @example on FIELD
+			
+«««			fragment SomeFragment on SomeType {
+«««			  field @example
+«««			}
+		'''.shallParse
+	}
+	
+	@Test
 	def void exampleNo80(){
 		'''
 			directive @example on
@@ -329,9 +340,110 @@ class SpecExamplesParsingTest {
 	}
 	
 	@Test
+	def void exampleNo89(){
+		'''
+			input Point {
+			  x: Int
+			  y: Int
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo90(){
+		'''
+			type Query {
+			  dog: Dog
+			}
+			
+			enum DogCommand { SIT, DOWN, HEEL }
+			
+			type Dog implements Pet {
+			  name: String!
+			  nickname: String
+			  barkVolume: Int
+			  doesKnowCommand(dogCommand: DogCommand!): Boolean!
+			  isHousetrained(atOtherHomes: Boolean): Boolean!
+			  owner: Human
+			}
+			
+			interface Sentient {
+			  name: String!
+			}
+			
+			interface Pet {
+			  name: String!
+			}
+			
+			type Alien implements Sentient {
+			  name: String!
+			  homePlanet: String
+			}
+			
+			type Human implements Sentient {
+			  name: String!
+			}
+			
+			enum CatCommand { JUMP }
+			
+			type Cat implements Pet {
+			  name: String!
+			  nickname: String
+			  doesKnowCommand(catCommand: CatCommand!): Boolean!
+			  meowVolume: Int
+			}
+			
+			union CatOrDog = Cat | Dog
+			union DogOrHuman = Dog | Human
+			union HumanOrAlien = Human | Alien
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo115(){
+		'''
+			extend type Query {
+			  human: Human
+			  pet: Pet
+			  catOrDog: CatOrDog
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo120(){
+		'''
+			type Arguments {
+			  multipleReqs(x: Int!, y: Int!): Int!
+			  booleanArgField(booleanArg: Boolean): Boolean
+			  floatArgField(floatArg: Float): Float
+			  intArgField(intArg: Int): Int
+			  nonNullBooleanArgField(nonNullBooleanArg: Boolean!): Boolean!
+			  booleanListArgField(booleanListArg: [Boolean]!): [Boolean]
+			  optionalNonNullBooleanArgField(optionalBooleanArg: Boolean! = false): Boolean!
+			}
+			
+			extend type Query {
+			  arguments: Arguments
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo155(){
+		'''
+			input ComplexInput { name: String, owner: String }
+			
+			extend type Query {
+			  findDog(complex: ComplexInput): Dog
+			  booleanList(booleanListArg: [Boolean!]): Boolean
+			}
+		'''.shallParse
+	}
+	
+	@Test
 	@Disabled("relevance and solution unclear")
 	def void exampleSchemaIntrospection(){
-		// TODO: "type" is an allowed field name
 		// TODO: literals of "__TypeKind" and "__DirectiveLocation" is are keywords actually.
 		//		But it is unclear if these would be allowed in own definitions or not. 
 		'''
@@ -428,76 +540,6 @@ class SpecExamplesParsingTest {
 			  INPUT_OBJECT
 			  INPUT_FIELD_DEFINITION
 			}
-		'''.shallParse
-	}
-	
-	@Test
-	def void exampleValidation(){
-		'''
-			type Query {
-			  dog: Dog
-			}
-			
-			enum DogCommand { SIT, DOWN, HEEL }
-			
-			type Dog implements Pet {
-			  name: String!
-			  nickname: String
-			  barkVolume: Int
-			  doesKnowCommand(dogCommand: DogCommand!): Boolean!
-			  isHousetrained(atOtherHomes: Boolean): Boolean!
-			  owner: Human
-			}
-			
-			interface Sentient {
-			  name: String!
-			}
-			
-			interface Pet {
-			  name: String!
-			}
-			
-			type Alien implements Sentient {
-			  name: String!
-			  homePlanet: String
-			}
-			
-			type Human implements Sentient {
-			  name: String!
-			}
-			
-			enum CatCommand { JUMP }
-			
-			type Cat implements Pet {
-			  name: String!
-			  nickname: String
-			  doesKnowCommand(catCommand: CatCommand!): Boolean!
-			  meowVolume: Int
-			}
-			
-			union CatOrDog = Cat | Dog
-			union DogOrHuman = Dog | Human
-			union HumanOrAlien = Human | Alien
-		'''.shallParse
-	}
-	
-	@Test
-	def void exampleNo120(){
-		// FIXME: "extend" is currently not supported
-		'''
-			type Arguments {
-			  multipleReqs(x: Int!, y: Int!): Int!
-			  booleanArgField(booleanArg: Boolean): Boolean
-			  floatArgField(floatArg: Float): Float
-			  intArgField(intArg: Int): Int
-			  nonNullBooleanArgField(nonNullBooleanArg: Boolean!): Boolean!
-			  booleanListArgField(booleanListArg: [Boolean]!): [Boolean]
-			  optionalNonNullBooleanArgField(optionalBooleanArg: Boolean! = false): Boolean!
-			}
-			
-«««			extend type Query {
-«««			  arguments: Arguments
-«««			}
 		'''.shallParse
 	}
 }
