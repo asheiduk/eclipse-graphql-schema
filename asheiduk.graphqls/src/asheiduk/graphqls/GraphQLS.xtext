@@ -36,14 +36,14 @@ TypeSystemExtension:
 // ------------------------------------------------------------------------
 
 SchemaDefinition:
-	'schema' Directives? '{'
+	'schema' Directives<const=true>? '{'
 		rootOperations += RootOperationTypeDefinition+
 	'}'
 ;
 
 SchemaExtension:
 	// TODO: spec is more concise -- additional check required
-	'extend' 'schema' {SchemaExtension} Directives? ('{'
+	'extend' 'schema' {SchemaExtension} Directives<const=true>? ('{'
 		// TODO: Spec says OperationTypeDefinition but it seems to be the same
 		rootOperations += RootOperationTypeDefinition+
 	'}')?
@@ -82,22 +82,22 @@ TypeExtension:
 // ------------------------------------------------------------------------
 
 ScalarTypeDefinition:
-	Description 'scalar' name=ID Directives?
+	Description 'scalar' name=ID Directives<const=true>?
 ;
 
 ScalarTypeExtension:
-	'extend' 'scalar' extends=[ScalarTypeDefinition] Directives
+	'extend' 'scalar' extends=[ScalarTypeDefinition] Directives<const=true>
 ;
 
 // ------------------------------------------------------------------------
 
 ObjectTypeDefinition:
-	Description 'type' name=ID ImplementsInterfaces? Directives? FieldsDefinition?
+	Description 'type' name=ID ImplementsInterfaces? Directives<const=true>? FieldsDefinition?
 ;
 
 ObjectTypeExtension:
 	// TODO: spec is more concise -- additional check required
-	'extend' 'type' extends=[ObjectTypeDefinition] ImplementsInterfaces? Directives? FieldsDefinition?
+	'extend' 'type' extends=[ObjectTypeDefinition] ImplementsInterfaces? Directives<const=true>? FieldsDefinition?
 ;
 
 fragment ImplementsInterfaces*:
@@ -105,12 +105,12 @@ fragment ImplementsInterfaces*:
 ;
 
 InterfaceTypeDefinition:
-	Description 'interface' name=ID Directives? FieldsDefinition?
+	Description 'interface' name=ID Directives<const=true>? FieldsDefinition?
 ;
 
 InterfaceTypeExtension:
 	// TODO: spec is more concise -- additional check required
-	'extend' 'interface' extends=[InterfaceTypeDefinition] Directives? FieldsDefinition?
+	'extend' 'interface' extends=[InterfaceTypeDefinition] Directives<const=true>? FieldsDefinition?
 ;
 
 fragment FieldsDefinition*:
@@ -120,18 +120,18 @@ fragment FieldsDefinition*:
 ;
 
 FieldDefinition:
-	Description	name=ID ArgumentsDefinition? ':' TypeSpec Directives?
+	Description	name=ID ArgumentsDefinition? ':' TypeSpec Directives<const=true>?
 ;
 
 // ------------------------------------------------------------------------
 
 UnionTypeDefinition:
-	Description 'union' name=ID Directives? UnionMemberTypes?
+	Description 'union' name=ID Directives<const=true>? UnionMemberTypes?
 ;
 
 UnionTypeExtension:
 	// TODO: spec is more concise -- additional check required
-	'extend' 'union' extends=[UnionTypeDefinition] Directives? UnionMemberTypes?
+	'extend' 'union' extends=[UnionTypeDefinition] Directives<const=true>? UnionMemberTypes?
 ;
 
 fragment UnionMemberTypes*:
@@ -141,12 +141,12 @@ fragment UnionMemberTypes*:
 // ------------------------------------------------------------------------
 
 EnumTypeDefinition:
-	Description 'enum' name=ID Directives? EnumValuesDefinition?
+	Description 'enum' name=ID Directives<const=true>? EnumValuesDefinition?
 ;
 
 EnumTypeExtension:
 	// TODO: spec is more concise -- additional check required
-	'extend' 'enum' extends=[EnumTypeDefinition] Directives? EnumValuesDefinition?
+	'extend' 'enum' extends=[EnumTypeDefinition] Directives<const=true>? EnumValuesDefinition?
 ;
 
 fragment EnumValuesDefinition*:
@@ -156,18 +156,18 @@ fragment EnumValuesDefinition*:
 ;
 
 EnumValueDefinition:
-	Description name=ID Directives?
+	Description name=ID Directives<const=true>?
 ;
 
 // ------------------------------------------------------------------------
 
 InputObjectTypeDefinition:
-	Description 'input' name=ID Directives? InputFieldsDefinition?
+	Description 'input' name=ID Directives<const=true>? InputFieldsDefinition?
 ;
 
 InputObjectTypeExtension:
 	// TODO: spec is more concise -- additional check required
-	'extend' 'input' extends=[InterfaceTypeDefinition] Directives? InputFieldsDefinition?
+	'extend' 'input' extends=[InterfaceTypeDefinition] Directives<const=true>? InputFieldsDefinition?
 ;
 
 fragment InputFieldsDefinition*:
@@ -181,7 +181,7 @@ fragment ArgumentsDefinition*:
 ;
 
 InputValueDefinition:
-	Description name=ID ':' TypeSpec ('=' defaultValue=Value)? Directives?
+	Description name=ID ':' TypeSpec ('=' defaultValue=Value<const=true>)? Directives<const=true>?
 ;
 
 // ------------------------------------------------------------------------
@@ -252,37 +252,39 @@ enum DirectiveLocation:
 
 // ------------------------------------------------------------------------
 
-fragment Directives*:
-	directives += Directive+
+fragment Directives<const>*:
+	directives += Directive<const>+
 ;
 
-Directive:
+Directive<const>:
 	// TODO: replace "name" with crossreference to prefined or user defined DirectiveDefinition
-	'@' name=ID Arguments?
+	'@' name=ID Arguments<const>?
 ;
 
-fragment Arguments*:
-	'(' arguments += Argument+ ')'
+fragment Arguments<const>*:
+	'(' arguments += Argument<const>+ ')'	
 ;
 
-Argument:
-	name=ID ':' value=Value
+Argument<const>:
+	name=ID ':' value=Value<const>
 ;
 
-Value:
-//	Variable	// TODO
+// ------------------------------------------------------------------------
+
+Value<const>:
+	// <!const> {Variable} '$' name=[VariableDefinition]	// TODO
 	{IntValue} value=INT
 	| {FloatValue} value=FLOAT
 	| {StringValue} value=STRING
 	| {BooleanValue} value=('true' | 'false') 
 	| {NullValue} 'null'
 //	| EnumValue	// TODO
-	| {ListValue} '[' items += Value* ']'
-	| {ObjectValue} '{' fields += ObjectField* '}'
+	| {ListValue} '[' items += Value<const>* ']'
+	| {ObjectValue} '{' fields += ObjectField<const>* '}'
 ;
 
-ObjectField:
-	name=ID ':' value=Value
+ObjectField<const>:
+	name=ID ':' value=Value<const>
 ;
 
 // ------------------------------------------------------------------
