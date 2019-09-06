@@ -311,9 +311,45 @@ fragment Arguments*:
 
 ID:
 	PLAIN_ID
+	// Enums
+	| 'ARGUMENT_DEFINITION'
+	| 'ENUM'
+	| 'ENUM_VALUE'
+	| 'FIELD'
+	| 'FIELD_DEFINITION'
+	| 'FRAGMENT_DEFINITION'
+	| 'FRAGMENT_SPREAD'
+	| 'INLINE_FRAGMENT'
+	| 'INPUT_FIELD_DEFINITION'
+	| 'INPUT_OBJECT'
+	| 'INTERFACE'
+	| 'MUTATION'
+	| 'OBJECT'
+	| 'QUERY'
+	| 'SCALAR'
+	| 'SCHEMA'
+	| 'SUBSCRIPTION'
+	| 'UNION'
+	// types
+	| 'directive'
+	| 'enum'
 	| 'input'
+	| 'interface'
+	| 'scalar'
+	| 'schema'
 	| 'type'
-	// TODO: other keywords
+	| 'union'
+	// type-related
+	| 'extend'
+	| 'implements'
+	| 'mutation'
+	| 'on'
+	| 'query'
+	| 'subscription'
+	// other keywords
+	| 'null'
+	| 'false'
+	| 'true'
 ;
 
 // ------------------------------------------------------------------

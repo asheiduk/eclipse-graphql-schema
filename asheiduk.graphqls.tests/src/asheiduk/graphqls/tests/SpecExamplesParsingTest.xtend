@@ -6,7 +6,6 @@ import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
 import org.eclipse.xtext.testing.util.ParseHelper
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 
@@ -442,10 +441,7 @@ class SpecExamplesParsingTest {
 	}
 	
 	@Test
-	@Disabled("relevance and solution unclear")
 	def void exampleSchemaIntrospection(){
-		// TODO: literals of "__TypeKind" and "__DirectiveLocation" is are keywords actually.
-		//		But it is unclear if these would be allowed in own definitions or not. 
 		'''
 			type __Schema {
 			  types: [__Type!]!
