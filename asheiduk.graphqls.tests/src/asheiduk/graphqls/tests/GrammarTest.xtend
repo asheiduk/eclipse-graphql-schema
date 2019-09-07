@@ -25,11 +25,19 @@ class GrammarTest {
 	
 	@Test
 	def void keywordsAsNames(){
+		val knownMissing = #{
+			'on',
+			'null',
+			'true',
+			'false'
+		}
+		
 		val excludedRules = #{IDRule, predefinedScalarRule}
 		val allOtherKeywords = grammar.rules.reject[excludedRules.contains(it)].findNonTerminalKeywords
 		val idRuleKeywords = IDRule.findNonTerminalKeywords
 		
 		val missingKeywords = new HashSet(allOtherKeywords) => [
+			removeAll(knownMissing)
 			removeAll(idRuleKeywords)
 		]
 		assertEquals('''keywords not in 'ID' rule:«'\n'»«missingKeywords.showKeywords»''', 0, missingKeywords.size)
@@ -38,6 +46,11 @@ class GrammarTest {
 			removeAll(allOtherKeywords)
 		]
 		assertEquals('''additional keywords in 'ID' rule:«'\n'»«additionalKeywords.showKeywords»''', 0, additionalKeywords.size)
+		
+		val supposedMissingButFound = new HashSet(knownMissing) => [
+			retainAll(idRuleKeywords)
+		]
+		assertEquals('''previsously missing keywords found in 'ID' rule:«'\n'»«supposedMissingButFound.showKeywords»''', 0, supposedMissingButFound.size)
 	}
 	
 	def findNonTerminalKeywords(AbstractRule rule){
