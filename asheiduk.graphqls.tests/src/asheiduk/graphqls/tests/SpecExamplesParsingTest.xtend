@@ -21,6 +21,9 @@ class SpecExamplesParsingTest {
 	
 	@Inject extension ParseHelper<Document> parseHelper
 	
+//	val XXX = 'XXX'	// TODO: remove ASAP
+	val XXX = ''
+
 	def private void shallParse(CharSequence it){
 		val result = parse
 		Assertions.assertNotNull(result)
@@ -29,10 +32,346 @@ class SpecExamplesParsingTest {
 	}
 	
 	@Test
+	def void exampleNo3(){
+		'''
+			«XXX»{
+			  user(id: 4) {
+			    name
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo5(){
+		'''
+			mutation {
+			  likeStory(storyID: 12345) {
+			    story {
+			      likeCount
+			    }
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo6(){
+		'''
+			«XXX»{
+			  field
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo7(){
+		'''
+			«XXX»{
+			  id
+			  firstName
+			  lastName
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo8(){
+		'''
+			«XXX»{
+			  me {
+			    id
+			    firstName
+			    lastName
+			    birthday {
+			      month
+			      day
+			    }
+			    friends {
+			      name
+			    }
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo9(){
+		'''
+			# `me` could represent the currently logged in viewer.
+			«XXX»{
+			  me {
+			    name
+			  }
+			}
+			
+			# `user` represents one of many users in a graph of data, referred to by a
+			# unique identifier.
+			«XXX»{
+			  user(id: 4) {
+			    name
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo10(){
+		'''
+			«XXX»{
+			  user(id: 4) {
+			    id
+			    name
+			    profilePic(size: 100)
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo11(){
+		'''
+			«XXX»{
+			  user(id: 4) {
+			    id
+			    name
+			    profilePic(width: 100, height: 50)
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo12(){
+		'''
+			«XXX»{
+			  picture(width: 200, height: 100)
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo13(){
+		'''
+			«XXX»{
+			  picture(height: 100, width: 200)
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo14(){
+		'''
+			«XXX»{
+			  user(id: 4) {
+			    id
+			    name
+			    smallPic: profilePic(size: 64)
+			    bigPic: profilePic(size: 1024)
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo16(){
+		'''
+			«XXX»{
+			  zuck: user(id: 4) {
+			    id
+			    name
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo18(){
+		'''
+			query noFragments {
+			  user(id: 4) {
+			    friends(first: 10) {
+			      id
+			      name
+			      profilePic(size: 50)
+			    }
+			    mutualFriends(first: 10) {
+			      id
+			      name
+			      profilePic(size: 50)
+			    }
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo19(){
+		'''
+			query withFragments {
+			  user(id: 4) {
+			    friends(first: 10) {
+			      ...friendFields
+			    }
+			    mutualFriends(first: 10) {
+			      ...friendFields
+			    }
+			  }
+			}
+			
+			fragment friendFields on User {
+			  id
+			  name
+			  profilePic(size: 50)
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo20(){
+		'''
+			query withNestedFragments {
+			  user(id: 4) {
+			    friends(first: 10) {
+			      ...friendFields
+			    }
+			    mutualFriends(first: 10) {
+			      ...friendFields
+			    }
+			  }
+			}
+			
+			fragment friendFields on User {
+			  id
+			  name
+			  ...standardProfilePic
+			}
+			
+			fragment standardProfilePic on User {
+			  profilePic(size: 50)
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo21(){
+		'''
+			query FragmentTyping {
+			  profiles(handles: ["zuck", "cocacola"]) {
+			    handle
+			    ...userFragment
+			    ...pageFragment
+			  }
+			}
+			
+			fragment userFragment on User {
+			  friends {
+			    count
+			  }
+			}
+			
+			fragment pageFragment on Page {
+			  likers {
+			    count
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo23(){
+		'''
+			query inlineFragmentTyping {
+			  profiles(handles: ["zuck", "cocacola"]) {
+			    handle
+			    ... on User {
+			      friends {
+			        count
+			      }
+			    }
+			    ... on Page {
+			      likers {
+			        count
+			      }
+			    }
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo24(){
+		'''
+			query inlineFragmentNoType($expandedInfo: Boolean) {
+			  user(handle: "zuck") {
+			    id
+			    name
+			    ... @include(if: $expandedInfo) {
+			      firstName
+			      lastName
+			      birthday
+			    }
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo30(){
+		'''
+			«XXX»{
+			  nearestThing(location: { lon: 12.43, lat: -53.211 })
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo31(){
+		'''
+			«XXX»{
+			  nearestThing(location: { lat: -53.211, lon: 12.43 })
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo32(){
+		'''
+			query getZuckProfile($devicePicSize: Int) {
+			  user(id: 4) {
+			    id
+			    name
+			    profilePic(size: $devicePicSize)
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo34(){
+		'''
+			query {
+			  myName
+			}
+		'''.shallParse
+	}
+	
+	@Test
 	def void exampleNo35(){
 		'''
 			type Query {
 			  myName: String
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo36(){
+		'''
+			mutation {
+			  setName(name: "Zuck") {
+			    newName
+			  }
 			}
 		'''.shallParse
 	}
@@ -122,6 +461,27 @@ class SpecExamplesParsingTest {
 	}
 	
 	@Test
+	def void exampleNo42(){
+		'''
+			«XXX»{
+			  name
+			  age
+			  picture
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo44(){
+		'''
+			«XXX»{
+			  age
+			  name
+			}
+		'''.shallParse
+	}
+	
+	@Test
 	def void exampleNo46(){
 		'''
 			type Person {
@@ -134,11 +494,83 @@ class SpecExamplesParsingTest {
 	}
 	
 	@Test
+	def void exampleNo48(){
+		'''
+			«XXX»{
+			  name
+			  relationship {
+			    name
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo50(){
+		'''
+			«XXX»{
+			  foo
+			  ...Frag
+			  qux
+			}
+			
+			fragment Frag on Query {
+			  bar
+			  baz
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo52(){
+		'''
+			«XXX»{
+			  foo
+			  ...Ignored
+			  ...Matching
+			  bar
+			}
+			
+			fragment Ignored on UnknownType {
+			  qux
+			  baz
+			}
+			
+			fragment Matching on Query {
+			  bar
+			  qux
+			  foo
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo54(){
+		'''
+			«XXX»{
+			  foo @skip(if: true)
+			  bar
+			  foo
+			}
+		'''.shallParse
+	}
+	
+	@Test
 	def void exampleNo56(){
 		'''
 			type Person {
 			  name: String
 			  picture(size: Int): Url
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo57(){
+		'''
+			«XXX»{
+			  name
+			  picture(size: 600)
 			}
 		'''.shallParse
 	}
@@ -199,6 +631,33 @@ class SpecExamplesParsingTest {
 	}
 	
 	@Test
+	def void exampleNo64(){
+		'''
+			«XXX»{
+			  entity {
+			    name
+			  }
+			  phoneNumber
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo66(){
+		'''
+			«XXX»{
+			  entity {
+			    name
+			    ... on Person {
+			      age
+			    }
+			  },
+			  phoneNumber
+			}
+		'''.shallParse
+	}
+	
+	@Test
 	def void exampleNo67(){
 		'''
 			extend interface NamedEntity {
@@ -239,6 +698,22 @@ class SpecExamplesParsingTest {
 			
 			type SearchQuery {
 			  firstSearchResult: SearchResult
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo71(){
+		'''
+			«XXX»{
+			  firstSearchResult {
+			    ... on Person {
+			      name
+			    }
+			    ... on Photo {
+			      height
+			    }
+			  }
 			}
 		'''.shallParse
 	}
@@ -285,14 +760,24 @@ class SpecExamplesParsingTest {
 	}
 	
 	@Test
+	def void exampleNo78(){
+		'''
+			query withNullableVariable($var: String) {
+			  fieldWithNonNullArg(nonNullArg: $var)
+			}
+		'''.shallParse
+	}
+	
+	
+	
+	@Test
 	def void exampleNo79(){
-		// TODO: fragments are not yet supported
 		'''
 			directive @example on FIELD
 			
-«««			fragment SomeFragment on SomeType {
-«««			  field @example
-«««			}
+			fragment SomeFragment on SomeType {
+			  field @example
+			}
 		'''.shallParse
 	}
 	
@@ -337,6 +822,25 @@ class SpecExamplesParsingTest {
 			}
 		'''.shallParse
 	}
+	
+	@Test
+	def void exampleNo87(){
+		'''
+			«XXX»{
+			  __type(name: "User") {
+			    name
+			    fields {
+			      name
+			      type {
+			        name
+			      }
+			    }
+			  }
+			}
+		'''.shallParse
+	}
+	
+	
 	
 	@Test
 	def void exampleNo89(){
@@ -399,12 +903,130 @@ class SpecExamplesParsingTest {
 	}
 	
 	@Test
+	def void exampleNo92(){
+		'''
+			query getDogName {
+			  dog {
+			    name
+			  }
+			}
+			
+			query getOwnerName {
+			  dog {
+			    owner {
+			      name
+			    }
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo95(){
+		'''
+			«XXX»{
+			  dog {
+			    name
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo97(){
+		'''
+			subscription sub {
+			  newMessage {
+			    body
+			    sender
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo98(){
+		'''
+			subscription sub {
+			  ...newMessageFields
+			}
+			
+			fragment newMessageFields on Subscription {
+			  newMessage {
+			    body
+			    sender
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo103(){
+		'''
+			fragment interfaceFieldSelection on Pet {
+			  name
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo105(){
+		'''
+			fragment inDirectFieldSelectionOnUnion on CatOrDog {
+			  __typename
+			  ... on Pet {
+			    name
+			  }
+			  ... on Dog {
+			    barkVolume
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo111(){
+		'''
+			fragment safeDifferingFields on Pet {
+			  ... on Dog {
+			    volume: barkVolume
+			  }
+			  ... on Cat {
+			    volume: meowVolume
+			  }
+			}
+			
+			fragment safeDifferingArgs on Pet {
+			  ... on Dog {
+			    doesKnowCommand(dogCommand: SIT)
+			  }
+			  ... on Cat {
+			    doesKnowCommand(catCommand: JUMP)
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
 	def void exampleNo115(){
 		'''
 			extend type Query {
 			  human: Human
 			  pet: Pet
 			  catOrDog: CatOrDog
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo117(){
+		'''
+			fragment argOnRequiredArg on Dog {
+			  doesKnowCommand(dogCommand: SIT)
+			}
+			
+			fragment argOnOptional on Dog {
+			  isHousetrained(atOtherHomes: true) @include(if: true)
 			}
 		'''.shallParse
 	}
@@ -427,6 +1049,107 @@ class SpecExamplesParsingTest {
 			}
 		'''.shallParse
 	}
+	
+	@Test
+	def void exampleNo121(){
+		'''
+			fragment multipleArgs on Arguments {
+			  multipleReqs(x: 1, y: 2)
+			}
+			
+			fragment multipleArgsReverseOrder on Arguments {
+			  multipleReqs(y: 1, x: 2)
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo122(){
+		'''
+			fragment goodBooleanArg on Arguments {
+			  booleanArgField(booleanArg: true)
+			}
+			
+			fragment goodNonNullArg on Arguments {
+			  nonNullBooleanArgField(nonNullBooleanArg: true)
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo126(){
+		'''
+			«XXX»{
+			  dog {
+			    ...fragmentOne
+			    ...fragmentTwo
+			  }
+			}
+			
+			fragment fragmentOne on Dog {
+			  name
+			}
+			
+			fragment fragmentTwo on Dog {
+			  owner {
+			    name
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo128(){
+		'''
+			fragment correctType on Dog {
+			  name
+			}
+			
+			fragment inlineFragment on Dog {
+			  ... on Dog {
+			    name
+			  }
+			}
+			
+			fragment inlineFragment2 on Dog {
+			  ... @include(if: true) {
+			    name
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNo130(){
+		'''
+			fragment fragOnObject on Dog {
+			  name
+			}
+			
+			fragment fragOnInterface on Pet {
+			  name
+			}
+			
+			fragment fragOnUnion on CatOrDog {
+			  ... on Dog {
+			    name
+			  }
+			}
+		'''.shallParse
+	}
+	
+	@Test
+	def void exampleNonum137(){
+		'''
+			fragment dogFragment on Dog {
+			  ... on Dog {
+			    barkVolume
+			  }
+			}
+		'''.shallParse
+	}
+	
+	// TODO: following tests
 	
 	@Test
 	def void exampleNo155(){
