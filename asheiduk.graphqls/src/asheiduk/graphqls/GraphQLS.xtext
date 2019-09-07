@@ -19,25 +19,8 @@ Document:
 ;
 
 Definition:
-	ExecutableDefinition
-	| TypeSystemDefinition
-	| TypeSystemExtension
-;
-
-ExecutableDefinition:
-	OperationDefinition
-	| FragmentDefinition
-;
-
-TypeSystemDefinition:
-	SchemaDefinition
-	| TypeDefinition
-	| DirectiveDefinition
-;
-
-TypeSystemExtension:
-	SchemaExtension
-	| TypeExtension
+	ObjectTypeDefinition
+	| OperationDefinition
 ;
 
 // ------------------------------------------------------------------------
@@ -45,143 +28,24 @@ TypeSystemExtension:
 // ------------------------------------------------------------------------
 
 OperationDefinition:
-	operationType=OperationType Name? VariableDefinitions? Directives<const=false>? SelectionSet
-	| 'XXX' SelectionSet	// TODO
-;
-
-enum OperationType:
-	query | mutation | subscription
-;
-
-fragment VariableDefinitions*:
-	'(' variables += VariableDefinition+ ')'
-;
-
-VariableDefinition:
-	'$' Name ':' TypeSpec DefaultValue?
-;
-
-fragment DefaultValue*:
-	'=' defaultValue=Value<const=true>
-;
-
-// ------------------------------------------------------------------------
-// -- FragmentDefinition
-// ------------------------------------------------------------------------
-
-FragmentDefinition:
-	'fragment' FragmentName	TypeCondition Directives<const=false>? SelectionSet
-;
-
-fragment FragmentName*:
-	name=ID	// TODO: Spec says: but not 'on'
-;
-
-fragment TypeCondition*:
-	'on' typeCondition=[TypeDefinition]
-;
-
-// ------------------------------------------------------------------------
-
-fragment SelectionSet*:
 	'{' selectionSet += Selection+ '}'
 ;
 
 Selection:
-	Field
-	| FragmentSpread
-	| InlineFragment	// TODO: add predicate due to 'on' ambiguity -- which one?
-;
-
-Field:
-	(alias=ID ':')? field=[FieldDefinition] Arguments<const=false>? Directives<const=false>? SelectionSet?
-;
-
-FragmentSpread:
-	// TODO: Spec says for FragmentName: but not 'on'
-	'...' ^fragment=[FragmentDefinition] Directives<const=false>?
-;
-
-InlineFragment:
-	'...' TypeCondition? Directives<const=false>? SelectionSet
-;
-
-// ------------------------------------------------------------------------
-// -- SchemaDefinition
-// ------------------------------------------------------------------------
-
-SchemaDefinition:
-	'schema' Directives<const=true>? '{'
-		rootOperations += RootOperationTypeDefinition+
-	'}'
-;
-
-SchemaExtension:
-	// TODO: spec is more concise -- additional check required
-	'extend' 'schema' {SchemaExtension} Directives<const=true>? ('{'
-		// TODO: Spec says OperationTypeDefinition but it seems to be the same
-		rootOperations += RootOperationTypeDefinition+
-	'}')?
-;
-
-RootOperationTypeDefinition:
-	operationType=OperationType ':' type=NamedType
+	(alias=ID ':')? field=ID Arguments<const=false>? Directives<const=false>?
 ;
 
 // ------------------------------------------------------------------------
 // -- TypeDefinition / TypeExtension
 // ------------------------------------------------------------------------
 
-TypeDefinition:
-	ScalarTypeDefinition
-	| ObjectTypeDefinition
-	| InterfaceTypeDefinition
-	| UnionTypeDefinition
-	| EnumTypeDefinition
-	| InputObjectTypeDefinition
-;
-
-TypeExtension:
-	ScalarTypeExtension
-	| ObjectTypeExtension
-	| InterfaceTypeExtension
-	| UnionTypeExtension
-	| EnumTypeExtension
-	| InputObjectTypeExtension
-;
-
-// ------------------------------------------------------------------------
-
-ScalarTypeDefinition:
-	Description? 'scalar' Name Directives<const=true>?
-;
-
-ScalarTypeExtension:
-	'extend' 'scalar' extends=[ScalarTypeDefinition] Directives<const=true>
-;
-
-// ------------------------------------------------------------------------
-
 ObjectTypeDefinition:
-	Description? 'type' Name ImplementsInterfaces? Directives<const=true>? FieldsDefinition?
-;
-
-ObjectTypeExtension:
-	// TODO: spec is more concise -- additional check required
-	'extend' 'type' extends=[ObjectTypeDefinition] ImplementsInterfaces? Directives<const=true>? FieldsDefinition?
-;
-
-fragment ImplementsInterfaces*:
-	'implements' '&'? implements += NamedType ( '&' implements += NamedType )*
-;
-
-InterfaceTypeDefinition:
-	Description? 'interface' Name Directives<const=true>? FieldsDefinition?
-;
-
-InterfaceTypeExtension:
-	// TODO: spec is more concise -- additional check required
-	'extend' 'interface' extends=[InterfaceTypeDefinition] Directives<const=true>? FieldsDefinition?
+	// Grammar Ambiguities here: "type X { Y }" could be a type definition WITH a FieldDefinition 
+	//	XOR a type definition WITHOUT a field followed by an anonymous query. Depending on the 
+	// (assumed) lookahead Y could be "a : b" (either field-name "a" with type "b" XOR field "b" aliased as "a")
+	'type' Name
+	 ->
+	FieldsDefinition?
 ;
 
 fragment FieldsDefinition*:
@@ -191,134 +55,17 @@ fragment FieldsDefinition*:
 ;
 
 FieldDefinition:
-	Description? Name ArgumentsDefinition? ':' TypeSpec Directives<const=true>?
+	Name ArgumentsDefinition? ':' TypeSpec Directives<const=true>?
 ;
 
 // ------------------------------------------------------------------------
-
-UnionTypeDefinition:
-	Description? 'union' Name Directives<const=true>? UnionMemberTypes?
-;
-
-UnionTypeExtension:
-	// TODO: spec is more concise -- additional check required
-	'extend' 'union' extends=[UnionTypeDefinition] Directives<const=true>? UnionMemberTypes?
-;
-
-fragment UnionMemberTypes*:
-	'=' '|'? members += NamedType ('|' members += NamedType)*
-;
-
-// ------------------------------------------------------------------------
-
-EnumTypeDefinition:
-	Description? 'enum' Name Directives<const=true>? EnumValuesDefinition?
-;
-
-EnumTypeExtension:
-	// TODO: spec is more concise -- additional check required
-	'extend' 'enum' extends=[EnumTypeDefinition] Directives<const=true>? EnumValuesDefinition?
-;
-
-fragment EnumValuesDefinition*:
-	'{'
-		values += EnumValueDefinition+
-	'}'
-;
-
-EnumValueDefinition:
-	Description? Name Directives<const=true>?
-;
-
-// ------------------------------------------------------------------------
-
-InputObjectTypeDefinition:
-	Description? 'input' Name Directives<const=true>? InputFieldsDefinition?
-;
-
-InputObjectTypeExtension:
-	// TODO: spec is more concise -- additional check required
-	'extend' 'input' extends=[InterfaceTypeDefinition] Directives<const=true>? InputFieldsDefinition?
-;
-
-fragment InputFieldsDefinition*:
-	'{'
-		fields += InputValueDefinition+
-	'}'
-;
 
 fragment ArgumentsDefinition*:
 	'(' arguments += InputValueDefinition+ ')'
 ;
 
 InputValueDefinition:
-	Description? Name ':' TypeSpec DefaultValue? Directives<const=true>?
-;
-
-// ------------------------------------------------------------------------
-
-/* Strictly correct but produces a grammar error:
- * 
- * 	rule ruleType has non-LL(*) decision due to recursive rule invocations reachable from alts 2,3.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
- * 
- * The recursion happens due to "NonNullType". 
- * 
-Type:
-	NamedType | ListType | NonNullType
-;
-
-NamedType:
-	type=[TypeDefinition]
-;
-
-ListType:
-	'[' itemType=Type ']'
-;
-
-NonNullType:
-	type=(NamedType | ListType) '!' 
-;
- */
-
-NamedType:
-	predefinedType=PredefinedScalar
-	| type=[TypeDefinition]	// TODO: Scoping?
-;
-
-Type:
-	NamedTypeWithNotNull | ListTypeWithNotNull
-;
-
-// TODO: perhaps these two special rules can be eliminated with left-factoring 
-NamedTypeWithNotNull:
-	(
-		predefinedType=PredefinedScalar
-		| type=[TypeDefinition]	// TODO: Scoping?
-	)
-	nonNull ?= '!'?	
-;
-
-ListTypeWithNotNull:
-	'[' itemType=Type ']' nonNull ?= '!'?
-;
-
-// ------------------------------------------------------------------------
-// -- DirectiveDefinition
-// ------------------------------------------------------------------------
-
-DirectiveDefinition:
-	Description? 'directive' '@' Name ArgumentsDefinition?
-	'on' '|'?  locations += DirectiveLocation ( '|' locations += DirectiveLocation)*
-;
-
-enum DirectiveLocation:
-	// ExecutableDirectiveLocation
-	QUERY | MUTATION | SUBSCRIPTION | FIELD | FRAGMENT_DEFINITION | FRAGMENT_SPREAD | INLINE_FRAGMENT
-	
-	// TypeSystemDirectiveLocation
-	| SCHEMA | SCALAR | OBJECT |FIELD_DEFINITION | ARGUMENT_DEFINITION
-	| INTERFACE | UNION | ENUM | ENUM_VALUE | INPUT_OBJECT
-	| INPUT_FIELD_DEFINITION
+	Name ':' TypeSpec Directives<const=true>?
 ;
 
 // ------------------------------------------------------------------------
@@ -328,7 +75,6 @@ fragment Directives<const>*:
 ;
 
 Directive<const>:
-	// TODO: replace "name" with crossreference to prefined or user defined DirectiveDefinition
 	'@' Name Arguments<const>?
 ;
 
@@ -343,16 +89,9 @@ Argument<const>:
 // ------------------------------------------------------------------------
 
 Value<const>:
-	<!const> {Variable} '$' name=[VariableDefinition]
-	| {IntValue} value=INT
-	| {FloatValue} value=FLOAT
-	| {StringValue} value=STRING
-	| {BooleanValue} value=('true' | 'false') 
-	| {NullValue} 'null'
-	// TODO: ID -> [EnumValueDefinition]
-	| {EnumValue} value=ID	// spec: but not 'true' or 'false' or 'null
-	| {ListValue} '[' items += Value<const>* ']'
-	| {ObjectValue} '{' fields += ObjectField<const>* '}'
+	{IntValue} value=INT
+	| {EnumValue} value=ID
+	| {ObjectValue} '{' fields += ObjectField<const>* '}'	// Error changes if this is removed. Why?
 ;
 
 ObjectField<const>:
@@ -360,79 +99,15 @@ ObjectField<const>:
 ;
 
 // ------------------------------------------------------------------
-
-enum PredefinedScalar:
-	Int | Float | String | Boolean | ID
-;
-
-// ------------------------------------------------------------------
 // -- Grammar-Fragments
 // ------------------------------------------------------------------
-
-fragment Description*: 
-	description=STRING
-;
 
 fragment Name*:
 	name=ID
 ;
 
 fragment TypeSpec*:
-	type=Type
-;
-
-// ------------------------------------------------------------------
-// -- Semi-Terminals
-// ------------------------------------------------------------------
-
-ID:
-	PLAIN_ID
-	| 'type'
-	| 'input'
-;
-
-XID:
-	PLAIN_ID
-	// Enums
-	| 'ARGUMENT_DEFINITION'
-	| 'ENUM'
-	| 'ENUM_VALUE'
-	| 'FIELD'
-	| 'FIELD_DEFINITION'
-	| 'FRAGMENT_DEFINITION'
-	| 'FRAGMENT_SPREAD'
-	| 'INLINE_FRAGMENT'
-	| 'INPUT_FIELD_DEFINITION'
-	| 'INPUT_OBJECT'
-	| 'INTERFACE'
-	| 'MUTATION'
-	| 'OBJECT'
-	| 'QUERY'
-	| 'SCALAR'
-	| 'SCHEMA'
-	| 'SUBSCRIPTION'
-	| 'UNION'
-	// types
-	| 'directive'
-	| 'enum'
-	| 'input'
-	| 'interface'
-	| 'scalar'
-	| 'schema'
-	| 'type'
-	| 'union'
-	// type-related
-	| 'extend'
-	| 'implements'
-	| 'mutation'
-//	| 'on'
-	| 'query'
-	| 'subscription'
-	// other keywords
-	| 'fragment'
-	| 'null'
-	| 'false'
-	| 'true'
+	type=ID
 ;
 
 // ------------------------------------------------------------------
@@ -440,14 +115,6 @@ XID:
 // ------------------------------------------------------------------
 
 terminal INT returns ecore::EInt:
-	INTEGER_PART;
-
-terminal FLOAT returns ecore::EDouble:	// Really! See §3.5.2 - it is a double but called "Float"!
-	INTEGER_PART FRACTIONAL_PART
-	| INTEGER_PART EXPONENT_PART
-	| INTEGER_PART FRACTIONAL_PART EXPONENT_PART;
-
-terminal fragment INTEGER_PART:
 	'-'? '0' | '-'? '1'..'9' '0'..'9'*;
 
 terminal fragment FRACTIONAL_PART:
@@ -461,7 +128,7 @@ terminal STRING:
 	'"' ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|'"') )* '"'
 	| '"""' -> '"""';
 
-terminal PLAIN_ID: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
+terminal ID: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
 
 // -- hidden tokens
 
