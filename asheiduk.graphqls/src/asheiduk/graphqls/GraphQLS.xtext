@@ -82,7 +82,7 @@ TypeExtension:
 // ------------------------------------------------------------------------
 
 ScalarTypeDefinition:
-	Description 'scalar' Name Directives<const=true>?
+	Description? 'scalar' Name Directives<const=true>?
 ;
 
 ScalarTypeExtension:
@@ -92,7 +92,7 @@ ScalarTypeExtension:
 // ------------------------------------------------------------------------
 
 ObjectTypeDefinition:
-	Description 'type' Name ImplementsInterfaces? Directives<const=true>? FieldsDefinition?
+	Description? 'type' Name ImplementsInterfaces? Directives<const=true>? FieldsDefinition?
 ;
 
 ObjectTypeExtension:
@@ -105,7 +105,7 @@ fragment ImplementsInterfaces*:
 ;
 
 InterfaceTypeDefinition:
-	Description 'interface' Name Directives<const=true>? FieldsDefinition?
+	Description? 'interface' Name Directives<const=true>? FieldsDefinition?
 ;
 
 InterfaceTypeExtension:
@@ -120,13 +120,13 @@ fragment FieldsDefinition*:
 ;
 
 FieldDefinition:
-	Description	Name ArgumentsDefinition? ':' TypeSpec Directives<const=true>?
+	Description? Name ArgumentsDefinition? ':' TypeSpec Directives<const=true>?
 ;
 
 // ------------------------------------------------------------------------
 
 UnionTypeDefinition:
-	Description 'union' Name Directives<const=true>? UnionMemberTypes?
+	Description? 'union' Name Directives<const=true>? UnionMemberTypes?
 ;
 
 UnionTypeExtension:
@@ -141,7 +141,7 @@ fragment UnionMemberTypes*:
 // ------------------------------------------------------------------------
 
 EnumTypeDefinition:
-	Description 'enum' Name Directives<const=true>? EnumValuesDefinition?
+	Description? 'enum' Name Directives<const=true>? EnumValuesDefinition?
 ;
 
 EnumTypeExtension:
@@ -156,13 +156,13 @@ fragment EnumValuesDefinition*:
 ;
 
 EnumValueDefinition:
-	Description Name Directives<const=true>?
+	Description? Name Directives<const=true>?
 ;
 
 // ------------------------------------------------------------------------
 
 InputObjectTypeDefinition:
-	Description 'input' Name Directives<const=true>? InputFieldsDefinition?
+	Description? 'input' Name Directives<const=true>? InputFieldsDefinition?
 ;
 
 InputObjectTypeExtension:
@@ -181,7 +181,7 @@ fragment ArgumentsDefinition*:
 ;
 
 InputValueDefinition:
-	Description Name ':' TypeSpec ('=' defaultValue=Value<const=true>)? Directives<const=true>?
+	Description? Name ':' TypeSpec ('=' defaultValue=Value<const=true>)? Directives<const=true>?
 ;
 
 // ------------------------------------------------------------------------
@@ -236,7 +236,7 @@ ListTypeWithNotNull:
 // ------------------------------------------------------------------------
 
 DirectiveDefinition:
-	Description 'directive' '@' Name ArgumentsDefinition?
+	Description? 'directive' '@' Name ArgumentsDefinition?
 	'on' '|'?  locations += DirectiveLocation ( '|' locations += DirectiveLocation)*
 ;
 
@@ -298,7 +298,7 @@ enum PredefinedScalar:
 // ------------------------------------------------------------------
 
 fragment Description*: 
-	description=STRING?
+	description=STRING
 ;
 
 fragment Name*:
