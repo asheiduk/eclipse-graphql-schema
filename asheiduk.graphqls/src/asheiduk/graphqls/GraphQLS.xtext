@@ -264,49 +264,17 @@ InputValueDefinition:
 
 // ------------------------------------------------------------------------
 
-/* Strictly correct but produces a grammar error:
- * 
- * 	rule ruleType has non-LL(*) decision due to recursive rule invocations reachable from alts 2,3.  Resolve by left-factoring or using syntactic predicates or using backtrack=true option.
- * 
- * The recursion happens due to "NonNullType". 
- * 
 Type:
-	NamedType | ListType | NonNullType
+	(NamedType | ListType) ('!' {NonNullType.type=current})?
 ;
 
 NamedType:
-	type=[TypeDefinition]
+	predefinedType=PredefinedScalar
+	| type=[TypeDefinition]
 ;
 
 ListType:
 	'[' itemType=Type ']'
-;
-
-NonNullType:
-	type=(NamedType | ListType) '!' 
-;
- */
-
-NamedType:
-	predefinedType=PredefinedScalar
-	| type=[TypeDefinition]	// TODO: Scoping?
-;
-
-Type:
-	NamedTypeWithNotNull | ListTypeWithNotNull
-;
-
-// TODO: perhaps these two special rules can be eliminated with left-factoring 
-NamedTypeWithNotNull:
-	(
-		predefinedType=PredefinedScalar
-		| type=[TypeDefinition]	// TODO: Scoping?
-	)
-	nonNull ?= '!'?	
-;
-
-ListTypeWithNotNull:
-	'[' itemType=Type ']' nonNull ?= '!'?
 ;
 
 // ------------------------------------------------------------------------
