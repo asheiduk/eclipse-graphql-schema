@@ -354,12 +354,20 @@ Value<const>:
 	| {IntValue} value=INT
 	| {FloatValue} value=FLOAT
 	| {StringValue} value=STRING
-	| {BooleanValue} value=('true' | 'false') 
-	| {NullValue} 'null'
+	| -> BooleanValue
+	| -> NullValue
 	// TODO: ID -> [EnumValueDefinition]
 	| {EnumValue} value=ID	// spec: but not 'true' or 'false' or 'null
 	| {ListValue} '[' items += Value<const>* ']'
 	| {ObjectValue} '{' fields += ObjectField<const>* '}'
+;
+
+BooleanValue:
+	value=('true'|'false')
+;
+
+NullValue:
+	{NullValue} 'null'
 ;
 
 ObjectField<const>:
@@ -431,9 +439,9 @@ ID:
 	| 'subscription'
 	// other keywords
 	| 'fragment'
-//	| 'null'
-//	| 'false'
-//	| 'true'
+	| 'null'
+	| 'false'
+	| 'true'
 ;
 
 // ------------------------------------------------------------------

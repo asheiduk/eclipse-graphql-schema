@@ -26,10 +26,7 @@ class GrammarTest {
 	@Test
 	def void keywordsAsNames(){
 		val knownMissing = #{
-			'on',
-			'null',
-			'true',
-			'false'
+			'on'
 		}
 		
 		val excludedRules = #{IDRule, predefinedScalarRule}
